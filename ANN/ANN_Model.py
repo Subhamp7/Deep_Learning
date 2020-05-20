@@ -38,7 +38,7 @@ sc=StandardScaler()
 X_test=sc.fit_transform(X_test)
 X_train=sc.transform(X_train)
 
-classifier= Sequential()
+'''classifier= Sequential()
 
 #adding first hidden layer
 classifier.add(Dense(units=6, kernel_initializer='uniform', activation='relu' ,input_dim=11 ))
@@ -57,5 +57,22 @@ Y_pred=(Y_pred>0.5)
 from sklearn.metrics import confusion_matrix
 cm=confusion_matrix(Y_test, Y_pred)
 print('confusion Matrix :',cm)
+'''
+
+from keras.wrappers.scikit_learn import KerasClassifier
+from sklearn.model_selection import cross_val_score
+
+def build_classifier():
+    classifier= Sequential()
+    classifier.add(Dense(units=6, kernel_initializer='uniform', activation='relu' ,input_dim=11 ))
+    classifier.add(Dense(units=6, kernel_initializer='uniform', activation='relu'))
+    classifier.add(Dense(units=1, kernel_initializer='uniform', activation='sigmoid'))
+    classifier.compile(optimizer ='adam', loss='binary_crossentropy', metrics=['accuracy'])
+    return classifier
+
+classifier=KerasClassifier(build_fn=build_classifier,batch_size=10, epochs=100 )
+accuracies=cross_val_score(estimator= classifier, X=X_train, y=Y_train, cv= 10, n_jobs=-1)
+
+
     
 print('Completed')
